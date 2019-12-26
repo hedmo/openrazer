@@ -49,10 +49,10 @@ if __name__ == '__main__':
 
     found_chroma = False
 
-    for index, driver_path in enumerate(find_devices(0x1532, 0x0c00), start=1):
+    for index, driver_path in enumerate(find_devices(0x1532, 0x0068), start=1):
         found_chroma = True
 
-        print("Razer Firefly {0}\n".format(index))
+        print("Razer Firefly_hyperflux {0}\n".format(index))
 
         print("Driver version: {0}".format(read_string(driver_path, 'version')))
         print("Driver firmware version: {0}".format(read_string(driver_path, 'firmware_version')))
