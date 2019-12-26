@@ -652,7 +652,7 @@ static int razer_mousemat_probe(struct hid_device *hdev, const struct hid_device
         switch(usb_dev->descriptor.idProduct) {
         case USB_DEVICE_ID_RAZER_FIREFLY_HYPERFLUX:        
         case USB_DEVICE_ID_RAZER_GOLIATHUS_CHROMA:
-        case USB_DEVICE_ID_RAZER_GOLIATHUS_CHROMA_EXTENDED:   
+        case USB_DEVICE_ID_RAZER_GOLIATHUS_CHROMA_EXTENDED:
             CREATE_DEVICE_FILE(&hdev->dev, &dev_attr_version);
             CREATE_DEVICE_FILE(&hdev->dev, &dev_attr_matrix_custom_frame);
             CREATE_DEVICE_FILE(&hdev->dev, &dev_attr_matrix_reactive_trigger);
@@ -734,7 +734,7 @@ static void razer_mousemat_disconnect(struct hid_device *hdev)
         switch(usb_dev->descriptor.idProduct) {
         case USB_DEVICE_ID_RAZER_FIREFLY_HYPERFLUX:        
         case USB_DEVICE_ID_RAZER_GOLIATHUS_CHROMA:
-        case USB_DEVICE_ID_RAZER_GOLIATHUS_CHROMA_EXTENDED:    
+        case USB_DEVICE_ID_RAZER_GOLIATHUS_CHROMA_EXTENDED:
             device_remove_file(&hdev->dev, &dev_attr_version);
             device_remove_file(&hdev->dev, &dev_attr_matrix_custom_frame);
             device_remove_file(&hdev->dev, &dev_attr_matrix_reactive_trigger);
