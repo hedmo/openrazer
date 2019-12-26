@@ -627,7 +627,6 @@ static DEVICE_ATTR(matrix_reactive_trigger,  0220, NULL,                        
 
 
 
-
 /**
  * Probe method is ran whenever a device is binded to the driver
  *
