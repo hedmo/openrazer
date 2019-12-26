@@ -88,7 +88,7 @@ class RazerKraken71Chroma(__RazerDevice):
     EVENT_FILE_REGEX = re.compile(r'.*Razer_Kraken_7\.1_Chroma-event-if03')
 
     USB_VID = 0x1532
-    USB_PID = 0x0504
+    USB_PID = 0x051A
     METHODS = ['get_device_type_headset',
                'set_static_effect', 'set_spectrum_effect', 'set_none_effect', 'set_breath_single_effect',
                'get_current_effect_kraken', 'get_static_effect_args_kraken', 'get_breath_effect_args_kraken', 'set_custom_kraken']
