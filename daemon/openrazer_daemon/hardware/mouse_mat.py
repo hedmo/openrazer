@@ -52,7 +52,7 @@ class RazerGoliathus(__RazerDeviceBrightnessSuspend):
     Class for the Razer Goliathus (2018)
     """
     USB_VID = 0x1532
-    USB_PID = 0x0c02
+    USB_PID = 0x0C01
     HAS_MATRIX = True
     MATRIX_DIMS = [1, 1]
     METHODS = ['get_device_type_mousemat', 'set_static_effect', 'set_spectrum_effect',
