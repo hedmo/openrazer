@@ -78,7 +78,7 @@ class RazerKraken71Alternate(RazerKraken71):
     """
     Class for the Razer Kraken 7.1 (Alternate)
     """
-    USB_PID = 0x0506
+    USB_PID = 0x051A
 
 
 class RazerKraken71Chroma(__RazerDevice):
