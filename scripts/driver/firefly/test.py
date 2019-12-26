@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     found_chroma = False
 
-    for index, driver_path in enumerate(find_devices(0x1532, 0x0c00), start=1):
+    for index, driver_path in enumerate(find_devices(0x1532, 0x0C00), start=1):
         found_chroma = True
 
         print("Razer Firefly {0}\n".format(index))
