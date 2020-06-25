@@ -34,21 +34,29 @@ The below devices are fully feature supported by OpenRazer which means all avail
 | Razer Blade Stealth (Late 2016)               |  1532:0220  |
 | Razer BlackWidow Chroma V2                    |  1532:0221  |
 | Razer Blade (Late 2016)                       |  1532:0224  |
-| Razer Cynosa Chroma                           |  1532:022A  |
-| Razer Blade Stealth (Mid 2017)                |  1532:022D  |
 | Razer Blade Pro (2017)                        |  1532:0225  |
 | Razer Huntsman Elite                          |  1532:0226  |
+| Razer Huntsman                                |  1532:0227  |
 | Razer BlackWidow Elite                        |  1532:0228  |
+| Razer Cynosa Chroma                           |  1532:022A  |
+| Razer Blade Stealth (Mid 2017)                |  1532:022D  |
 | Razer Blade Pro FullHD (2017)                 |  1532:022F  |
 | Razer Blade Stealth (Late 2017)               |  1532:0232  |
 | Razer Blade 15 (2018)                         |  1532:0233  |
+| Razer Blade Pro 17 (2019)                     |  1532:0234  |
 | Razer BlackWidow Lite (2018)                  |  1532:0235  |
+| Razer BlackWidow Essential                    |  1532:0237  |
 | Razer Blade Stealth (2019)                    |  1532:0239  |
 | Razer Blade 15 (2019) Advanced                |  1532:023A  |
 | Razer Blade 15 (2018) Base Model              |  1532:023B  |
 | Razer Blade 15 (2018) Mercury                 |  1532:0240  |
 | Razer BlackWidow (2019)                       |  1532:0241  |
+| Razer Huntsman Tournament Edition             |  1532:0243  |
 | Razer Blade 15 (Mid 2019) Mercury             |  1532:0245  |
+| Razer Blade 15 (Mid 2019) Base                |  1532:0246  |
+| Razer Blade Stealth (Late 2019)               |  1532:024A  |
+| Razer Blade Pro (Late 2019)                   |  1532:024C  |
+| Razer Blade 15 Studio Edition (2019)          |  1532:024D  |
 
 ### Mice
 | Device                                        | USB VID:PID |
@@ -58,11 +66,13 @@ The below devices are fully feature supported by OpenRazer which means all avail
 | Razer Abyssus 1800                            |  1532:0020  |
 | Razer Mamba 2012 (Wired)                      |  1532:0024  |
 | Razer Mamba 2012 (Wireless)                   |  1532:0025  |
+| Razer Naga 2012                               |  1532:002E  |
 | Razer Imperator 2012                          |  1532:002F  |
 | Razer Ouroboros 2012                          |  1532:0032  |
 | Razer Taipan                                  |  1532:0034  |
 | Razer Naga Hex (Red)                          |  1532:0036  |
 | Razer DeathAdder 2013                         |  1532:0037  |
+| Razer DeathAdder 1800                         |  1532:0038  |
 | Razer Orochi 2013                             |  1532:0039  |
 | Razer Naga 2014                               |  1532:0040  |
 | Razer Naga Hex                                |  1532:0041  |
@@ -76,16 +86,32 @@ The below devices are fully feature supported by OpenRazer which means all avail
 | Razer Naga Hex V2                             |  1532:0050  |
 | Razer Naga Chroma                             |  1532:0053  |
 | Razer DeathAdder 3500                         |  1532:0054  |
+| Razer Lancehead (Wired)                       |  1532:0059  |
+| Razer Lancehead (Wireless)                    |  1532:005A  |
 | Razer Abyssus V2                              |  1532:005B  |
 | Razer DeathAdder Elite                        |  1532:005C  |
 | Razer Abyssus 2000                            |  1532:005E  |
 | Razer Lancehead Tournament Edition            |  1532:0060  |
+| Razer Basilisk                                |  1532:0064  |
 | Razer Naga Trinity                            |  1532:0067  |
+| Razer Abyssus Elite (D.Va Edition)            |  1532:006A  |
+| Razer Abyssus Essential                       |  1532:006B  |
+| Razer Mamba Elite (Wired)                     |  1532:006C  |
 | Razer DeathAdder Essential                    |  1532:006E  |
+| Razer Lancehead Wireless (Receiver)           |  1532:006F  |
+| Razer Lancehead Wireless (Wired)              |  1532:0070  |
+| Razer DeathAdder Essential (White Edition)    |  1532:0071  |
+| Razer Mamba Wireless (Receiver)               |  1532:0072  |
+| Razer Mamba Wireless (Wired)                  |  1532:0073  |
+| Razer Viper                                   |  1532:0078  |
+| Razer Viper Ultimate (Wired)                  |  1532:007A  |
+| Razer Viper Ultimate (Wireless)               |  1532:007B  |
+| Razer DeathAdder V2                           |  1532:0084  |
 
 ### Mousemats
 | Device                                        | USB VID:PID |
 | --------------------------------------------- | ----------- |
+| Razer Firefly Hyperflux                       |  1532:0068  |
 | Razer Firefly                                 |  1532:0C00  |
 | Razer Firefly Hyperflux                       |  1532:0068  |
 | Razer Goliathus                               |  1532:0C01  |
@@ -98,6 +124,7 @@ The below devices are fully feature supported by OpenRazer which means all avail
 | Razer Kraken 7.1 Chroma                       |  1532:0504  |
 | Razer Kraken 7.1                              |  1532:0506  |
 | Razer Kraken 7.1 V2                           |  1532:0510  |
+| Razer Kraken Ultimate                         |  1532:0527  |
 
 ### Misc
 | Device                                        | USB VID:PID |
@@ -108,7 +135,12 @@ The below devices are fully feature supported by OpenRazer which means all avail
 | Razer Orbweaver Chroma                        |  1532:0207  |
 | Razer Tartarus Chroma                         |  1532:0208  |
 | Razer Core                                    |  1532:0215  |
+| Razer Tartarus V2                             |  1532:022B  |
+| Razer Nommo Chroma                            |  1532:0517  |
+| Razer Nommo Pro                               |  1532:0518  |
 | Razer Chroma Mug Holder                       |  1532:0F07  |
+| Razer Base Station Chroma                     |  1532:0F08  |
+| Razer Chroma Hardware Development Kit (HDK)   |  1532:0F09  |
 
 #### Determining the Device ID
 Razer devices use a USB VID (Vendor ID) of `1532`. You can identify the USB PID (Product ID) by typing:

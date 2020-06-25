@@ -15,6 +15,337 @@ from openrazer_daemon.dbus_services.dbus_methods.lanceheadte import get_left_bri
     set_left_brightness as _set_left_brightness, set_right_brightness as _set_right_brightness
 
 
+class RazerLanceheadWirelessWired(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer Lancehead Wireless (Wired)
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Lancehead_Wireless-if0(1|2)-event-kbd')
+
+    USB_VID = 0x1532
+    USB_PID = 0x0070
+    HAS_MATRIX = True
+    WAVE_DIRS = (1, 2)
+    MATRIX_DIMS = [1, 16]
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy', 'get_poll_rate', 'set_poll_rate', 'get_logo_brightness', 'set_logo_brightness', 'get_scroll_brightness', 'set_scroll_brightness',
+               'get_left_brightness', 'set_left_brightness', 'get_right_brightness', 'set_right_brightness',
+               # Battery
+               'get_battery', 'is_charging', 'set_idle_time', 'set_low_battery_threshold',
+               # Logo
+               'set_logo_wave', 'set_logo_static_naga_hex_v2', 'set_logo_spectrum_naga_hex_v2', 'set_logo_none_naga_hex_v2', 'set_logo_reactive_naga_hex_v2', 'set_logo_breath_random_naga_hex_v2', 'set_logo_breath_single_naga_hex_v2', 'set_logo_breath_dual_naga_hex_v2',
+               # Scroll wheel
+               'set_scroll_wave', 'set_scroll_static_naga_hex_v2', 'set_scroll_spectrum_naga_hex_v2', 'set_scroll_none_naga_hex_v2', 'set_scroll_reactive_naga_hex_v2', 'set_scroll_breath_random_naga_hex_v2', 'set_scroll_breath_single_naga_hex_v2', 'set_scroll_breath_dual_naga_hex_v2',
+               # Left side
+               'set_left_wave', 'set_left_static', 'set_left_spectrum', 'set_left_none', 'set_left_reactive', 'set_left_breath_random', 'set_left_breath_single', 'set_left_breath_dual',
+               # Right side
+               'set_right_wave', 'set_right_static', 'set_right_spectrum', 'set_right_none', 'set_right_reactive', 'set_right_breath_random', 'set_right_breath_single', 'set_right_breath_dual',
+               # Can set LOGO and Scroll with custom
+               'set_custom_effect', 'set_key_row']
+
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/1205/1205_lancehead.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": "https://assets.razerzone.com/eeimages/support/products/1205/1205_lancehead.png"
+    }
+
+    DPI_MAX = 16000
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args.clear()
+        self.suspend_args['brightness'] = (_da_get_logo_brightness(self), _da_get_scroll_brightness(self), _get_left_brightness(self), _get_right_brightness(self))
+
+        # Todo make it context?
+        self.disable_notify = True
+        _da_set_logo_brightness(self, 0)
+        _da_set_scroll_brightness(self, 0)
+        _set_left_brightness(self, 0)
+        _set_right_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', (100, 100))[0]
+        scroll_brightness = self.suspend_args.get('brightness', (100, 100))[1]
+        left_row_brightness = self.suspend_args.get('brightness', (100, 100))[2]
+        right_row_brightness = self.suspend_args.get('brightness', (100, 100))[3]
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        _da_set_scroll_brightness(self, scroll_brightness)
+        _set_left_brightness(self, left_row_brightness)
+        _set_right_brightness(self, right_row_brightness)
+        self.disable_notify = False
+
+
+class RazerLanceheadWirelessReceiver(RazerLanceheadWirelessWired):
+    """
+    Class for the Razer Lancehead Wireless (Receiver)
+    """
+    USB_PID = 0x006F
+    METHODS = RazerLanceheadWirelessWired.METHODS + ['set_charge_effect', 'set_charge_colour']
+
+    def __init__(self, *args, **kwargs):
+        super(RazerLanceheadWirelessReceiver, self).__init__(*args, **kwargs)
+
+        self._battery_manager = _BatteryManager(self, self._device_number, 'Razer Lancehead Wireless')
+        self._battery_manager.active = self.config.getboolean('Startup', 'mouse_battery_notifier', fallback=False)
+
+    def _close(self):
+        """
+        Close the key manager
+        """
+        super(RazerLanceheadWirelessReceiver, self)._close()
+
+        self._battery_manager.close()
+
+
+class RazerLanceheadWired(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer Lancehead (Wired)
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Lancehead-if0(1|2)-event-kbd')
+
+    USB_VID = 0x1532
+    USB_PID = 0x0059
+    HAS_MATRIX = True
+    WAVE_DIRS = (1, 2)
+    MATRIX_DIMS = [1, 16]
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy', 'get_poll_rate', 'set_poll_rate', 'get_logo_brightness', 'set_logo_brightness', 'get_scroll_brightness', 'set_scroll_brightness',
+               'get_left_brightness', 'set_left_brightness', 'get_right_brightness', 'set_right_brightness',
+               # Battery
+               'get_battery', 'is_charging', 'set_idle_time', 'set_low_battery_threshold',
+               # Logo
+               'set_logo_wave', 'set_logo_static_naga_hex_v2', 'set_logo_spectrum_naga_hex_v2', 'set_logo_none_naga_hex_v2', 'set_logo_reactive_naga_hex_v2', 'set_logo_breath_random_naga_hex_v2', 'set_logo_breath_single_naga_hex_v2', 'set_logo_breath_dual_naga_hex_v2',
+               # Scroll wheel
+               'set_scroll_wave', 'set_scroll_static_naga_hex_v2', 'set_scroll_spectrum_naga_hex_v2', 'set_scroll_none_naga_hex_v2', 'set_scroll_reactive_naga_hex_v2', 'set_scroll_breath_random_naga_hex_v2', 'set_scroll_breath_single_naga_hex_v2', 'set_scroll_breath_dual_naga_hex_v2',
+               # Left side
+               'set_left_wave', 'set_left_static', 'set_left_spectrum', 'set_left_none', 'set_left_reactive', 'set_left_breath_random', 'set_left_breath_single', 'set_left_breath_dual',
+               # Right side
+               'set_right_wave', 'set_right_static', 'set_right_spectrum', 'set_right_none', 'set_right_reactive', 'set_right_breath_random', 'set_right_breath_single', 'set_right_breath_dual',
+               # Can set LOGO and Scroll with custom
+               'set_custom_effect', 'set_key_row']
+
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/1205/1205_lancehead.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": "https://assets.razerzone.com/eeimages/support/products/1205/1205_lancehead.png"
+    }
+
+    DPI_MAX = 16000
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args.clear()
+        self.suspend_args['brightness'] = (_da_get_logo_brightness(self), _da_get_scroll_brightness(self), _get_left_brightness(self), _get_right_brightness(self))
+
+        # Todo make it context?
+        self.disable_notify = True
+        _da_set_logo_brightness(self, 0)
+        _da_set_scroll_brightness(self, 0)
+        _set_left_brightness(self, 0)
+        _set_right_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', (100, 100))[0]
+        scroll_brightness = self.suspend_args.get('brightness', (100, 100))[1]
+        left_row_brightness = self.suspend_args.get('brightness', (100, 100))[2]
+        right_row_brightness = self.suspend_args.get('brightness', (100, 100))[3]
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        _da_set_scroll_brightness(self, scroll_brightness)
+        _set_left_brightness(self, left_row_brightness)
+        _set_right_brightness(self, right_row_brightness)
+        self.disable_notify = False
+
+
+class RazerLanceheadWireless(RazerLanceheadWired):
+    """
+    Class for the Razer Lancehead (Wireless)
+    """
+    USB_PID = 0x005A
+    METHODS = RazerLanceheadWired.METHODS + ['set_charge_effect', 'set_charge_colour']
+
+    def __init__(self, *args, **kwargs):
+        super(RazerLanceheadWireless, self).__init__(*args, **kwargs)
+
+        self._battery_manager = _BatteryManager(self, self._device_number, 'Razer Lancehead')
+        self._battery_manager.active = self.config.getboolean('Startup', 'mouse_battery_notifier', fallback=False)
+
+    def _close(self):
+        """
+        Close the key manager
+        """
+        super(RazerLanceheadWireless, self)._close()
+
+        self._battery_manager.close()
+
+
+class RazerDeathAdderEssentialWhiteEdition(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer DeathAdder Essential (White Edition)
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Razer_DeathAdder_Essential_White_Edition-if0(1|2)-event-kbd')
+
+    USB_VID = 0x1532
+    USB_PID = 0x0071
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy',
+               'get_poll_rate', 'set_poll_rate',
+               'get_logo_brightness', 'set_logo_brightness',
+               'get_scroll_brightness', 'set_scroll_brightness',
+               # Logo
+               'set_logo_static_naga_hex_v2', 'set_logo_none_naga_hex_v2', 'set_logo_breath_single_naga_hex_v2',
+               # Scroll wheel
+               'set_scroll_static_naga_hex_v2', 'set_scroll_none_naga_hex_v2', 'set_scroll_breath_single_naga_hex_v2']
+
+    DEVICE_IMAGE = "https://assets2.razerzone.com/images/da10m/carousel/razer-death-adder-gallery-25.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": "https://assets2.razerzone.com/images/da10m/carousel/razer-death-adder-gallery-25.png"
+    }
+
+    DPI_MAX = 6400
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args.clear()
+        self.suspend_args['brightness'] = (_da_get_logo_brightness(self), _da_get_scroll_brightness(self))
+
+        # Todo make it context?
+        self.disable_notify = True
+        _da_set_logo_brightness(self, 0)
+        _da_set_scroll_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', (100, 100))[0]
+        scroll_brightness = self.suspend_args.get('brightness', (100, 100))[1]
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        _da_set_scroll_brightness(self, scroll_brightness)
+        self.disable_notify = False
+
+
+class RazerAbyssusEliteDVaEdition(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer Abyssus Elite (D.Va Edition)
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_D.Va_Razer_Abyssus_Elite-if0(1|2)-event-kbd')
+
+    USB_VID = 0x1532
+    USB_PID = 0x006A
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy',
+               'get_poll_rate', 'set_poll_rate',
+               'get_logo_brightness', 'set_logo_brightness',
+               # Underglow/Logo use LOGO_LED
+               'set_logo_static_naga_hex_v2', 'set_logo_spectrum_naga_hex_v2', 'set_logo_none_naga_hex_v2', 'set_logo_reactive_naga_hex_v2',
+               'set_logo_breath_random_naga_hex_v2', 'set_logo_breath_single_naga_hex_v2', 'set_logo_breath_dual_naga_hex_v2']
+
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/1288/d.va_abyssus_elite.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": "https://assets.razerzone.com/eeimages/support/products/1288/d.va_abyssus_elite.png"
+    }
+
+    DPI_MAX = 7200
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args['brightness'] = _da_get_logo_brightness(self)
+
+        # Todo make it context?
+        self.disable_notify = True
+        _da_set_logo_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', 100)
+
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        self.disable_notify = False
+
+
+class RazerAbyssusEssential(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer Abyssus Essential
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Razer_Abyssus_Essential-if0(1|2)-event-kbd')
+
+    USB_VID = 0x1532
+    USB_PID = 0x006B
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy',
+               'get_poll_rate', 'set_poll_rate',
+               'get_logo_brightness', 'set_logo_brightness',
+               # Backlight/Logo...same
+               'set_logo_static_naga_hex_v2', 'set_logo_spectrum_naga_hex_v2', 'set_logo_none_naga_hex_v2', 'set_logo_reactive_naga_hex_v2',
+               'set_logo_breath_random_naga_hex_v2', 'set_logo_breath_single_naga_hex_v2', 'set_logo_breath_dual_naga_hex_v2']
+
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/1290/1290_abyssusessential.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": "https://assets.razerzone.com/eeimages/support/products/1290/1290_abyssusessential.png"
+    }
+
+    DPI_MAX = 7200
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args['brightness'] = _da_get_logo_brightness(self)
+
+        # Todo make it context?
+        self.disable_notify = True
+        _da_set_logo_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', 100)
+
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        self.disable_notify = False
+
+
 class RazerLanceheadTE(__RazerDeviceSpecialBrightnessSuspend):
     """
     Class for the Razer Lancehead Tournament Edition
@@ -176,7 +507,7 @@ class RazerAbyssus(__RazerDevice):
     """
     USB_VID = 0x1532
     USB_PID = 0x0042
-    METHODS = ['get_device_type_mouse', 'set_logo_active', 'get_logo_active']
+    METHODS = ['get_device_type_mouse', 'set_logo_active', 'get_logo_active', 'get_poll_rate', 'set_poll_rate']
 
     DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/274/abyssus2014_500x500.png"
 
@@ -262,7 +593,7 @@ class RazerOuroboros(__RazerDevice):
 
         Get the last known brightness and then set the brightness
         """
-        scroll_brightness = self.suspend_args.get('brightness', 100)[0]
+        scroll_brightness = self.suspend_args.get('brightness', 100)
 
         self.disable_notify = True
         _da_set_scroll_brightness(self, scroll_brightness)
@@ -515,6 +846,62 @@ class RazerNagaHexV2(__RazerDeviceBrightnessSuspend):
         _da_set_logo_brightness(self, logo_brightness)
         _da_set_scroll_brightness(self, scroll_brightness)
         _set_backlight_brightness(self, backlight_brightness)
+        self.disable_notify = False
+
+
+class RazerNaga2012(__RazerDevice):
+    """
+    Class for the Razer Naga 2012
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Razer_Naga-if0(1|2)-event-kbd')
+
+    USB_VID = 0x1532
+    USB_PID = 0x002E
+    DEDICATED_MACRO_KEYS = True
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy_byte', 'set_dpi_xy_byte', 'get_poll_rate', 'set_poll_rate',
+               'get_logo_active', 'set_logo_active', 'get_scroll_active', 'set_scroll_active', 'set_backlight_active', 'get_backlight_active']
+
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/products/39/razer-naga-gallery-1.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": "https://assets.razerzone.com/eeimages/products/39/razer-naga-gallery-4.png",
+        "side_img": "https://assets.razerzone.com/eeimages/products/39/razer-naga-gallery-3.png",
+        "perspective_img": "https://assets.razerzone.com/eeimages/products/39/razer-naga-gallery-1.png"
+    }
+
+    DPI_MAX = 5600
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args.clear()
+        self.suspend_args['active'] = (_da_get_logo_active(self), _da_get_scroll_active(self), _da_get_backlight_active(self))
+
+        # Todo make it context?
+        self.disable_notify = True
+        _da_set_logo_active(self, False)
+        _da_set_scroll_active(self, False)
+        _da_set_backlight_active(self, False)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+
+        Get the last known brightness and then set the brightness
+        """
+        logo_active = self.suspend_args.get('active', (True, True, True))[0]
+        scroll_active = self.suspend_args.get('active', (True, True, True))[1]
+        backlight_active = self.suspend_args.get('active', (True, True, True))[2]
+
+        self.disable_notify = True
+        _da_set_logo_active(self, logo_active)
+        _da_set_scroll_active(self, scroll_active)
+        _da_set_backlight_active(self, backlight_active)
         self.disable_notify = False
 
 
@@ -961,6 +1348,84 @@ class RazerMamba2012Wired(__RazerDeviceSpecialBrightnessSuspend):
     DPI_MAX = 6400
 
 
+class RazerMambaWirelessWired(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer Mamba Wireless (Wired)
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Mamba_Wireless_000000000000-if0(1|2)-event-kbd')
+    USB_VID = 0x1532
+    USB_PID = 0x0073
+    HAS_MATRIX = True
+    MATRIX_DIMS = [1, 16]
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy', 'get_poll_rate', 'set_poll_rate', 'get_logo_brightness', 'set_logo_brightness', 'get_scroll_brightness', 'set_scroll_brightness',
+               # Battery
+               'get_battery', 'is_charging', 'set_idle_time', 'set_low_battery_threshold',
+               # Logo
+               'set_logo_static_naga_hex_v2', 'set_logo_spectrum_naga_hex_v2', 'set_logo_none_naga_hex_v2', 'set_logo_reactive_naga_hex_v2', 'set_logo_breath_random_naga_hex_v2', 'set_logo_breath_single_naga_hex_v2', 'set_logo_breath_dual_naga_hex_v2',
+               # Scroll wheel
+               'set_scroll_static_naga_hex_v2', 'set_scroll_spectrum_naga_hex_v2', 'set_scroll_none_naga_hex_v2', 'set_scroll_reactive_naga_hex_v2', 'set_scroll_breath_random_naga_hex_v2', 'set_scroll_breath_single_naga_hex_v2', 'set_scroll_breath_dual_naga_hex_v2',
+               # Can set LOGO and Scroll with custom
+               'set_custom_effect', 'set_key_row']
+
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/1404/1404_mamba_wireless.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": "https://assets.razerzone.com/eeimages/support/products/1404/1404_mamba_wireless.png"
+    }
+
+    DPI_MAX = 16000
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args.clear()
+        self.suspend_args['brightness'] = (_da_get_logo_brightness(self), _da_get_scroll_brightness(self))
+
+        # Todo make it context?
+        self.disable_notify = True
+        _da_set_logo_brightness(self, 0)
+        _da_set_scroll_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', (100, 100))[0]
+        scroll_brightness = self.suspend_args.get('brightness', (100, 100))[1]
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        _da_set_scroll_brightness(self, scroll_brightness)
+        self.disable_notify = False
+
+
+class RazerMambaWirelessReceiver(RazerMambaWirelessWired):
+    """
+    Class for the Razer Mamba Wireless (Receiver)
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Mamba_Wireless_Receiver-if0(1|2)-event-kbd')
+    USB_PID = 0x0072
+    METHODS = RazerMambaWirelessWired.METHODS + ['set_charge_effect', 'set_charge_colour']
+
+    def __init__(self, *args, **kwargs):
+        super(RazerMambaWirelessReceiver, self).__init__(*args, **kwargs)
+
+        self._battery_manager = _BatteryManager(self, self._device_number, 'Razer Mamba Wireless')
+        self._battery_manager.active = self.config.getboolean('Startup', 'mouse_battery_notifier', fallback=False)
+
+    def _close(self):
+        """
+        Close the key manager
+        """
+        super(RazerMambaWirelessReceiver, self)._close()
+
+        self._battery_manager.close()
+
+
 class RazerNaga2014(__RazerDevice):
     """
     Class for the Razer Naga 2014
@@ -1231,6 +1696,122 @@ class RazerDeathAdder3500(__RazerDeviceSpecialBrightnessSuspend):
         self.disable_notify = False
 
 
+class RazerViperUltimateWired(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer Viper Ultimate (Wired)
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Razer_Viper_Ultimate_000000000000-if0(1|2)-event-kbd')
+
+    USB_VID = 0x1532
+    USB_PID = 0x007A
+    HAS_MATRIX = True
+    WAVE_DIRS = (1, 2)
+    MATRIX_DIMS = [1, 20]
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy', 'get_poll_rate', 'set_poll_rate',
+               # Logo
+               'get_logo_brightness', 'set_logo_brightness', 'set_logo_wave',
+               'set_logo_static_naga_hex_v2', 'set_logo_spectrum_naga_hex_v2', 'set_logo_none_naga_hex_v2',
+               'set_logo_reactive_naga_hex_v2', 'set_logo_breath_random_naga_hex_v2',
+               'set_logo_breath_single_naga_hex_v2', 'set_logo_breath_dual_naga_hex_v2']
+
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/1577/ee_photo.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": DEVICE_IMAGE
+    }
+
+    DPI_MAX = 20000
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args.clear()
+        self.suspend_args['brightness'] = _da_get_logo_brightness(self)
+
+        self.disable_notify = True
+        _da_set_logo_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', 100)
+
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        self.disable_notify = False
+
+
+class RazerViperUltimateWireless(RazerViperUltimateWired):
+    """
+    Class for the Razer Viper Ultimate (Wireless)
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Razer_Viper_Ultimate_Dongle-if0(1|2)-event-kbd')
+
+    USB_VID = 0x1532
+    USB_PID = 0x007B
+
+
+class RazerViper(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer Viper
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Razer_Viper-if0(1|2)-event-kbd')
+
+    USB_VID = 0x1532
+    USB_PID = 0x0078
+    HAS_MATRIX = True
+    WAVE_DIRS = (1, 2)
+    MATRIX_DIMS = [1, 16]
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy', 'get_poll_rate', 'set_poll_rate',
+               # Logo
+               'get_logo_brightness', 'set_logo_brightness', 'set_logo_wave',
+               'set_logo_static_naga_hex_v2', 'set_logo_spectrum_naga_hex_v2', 'set_logo_none_naga_hex_v2',
+               'set_logo_reactive_naga_hex_v2', 'set_logo_breath_random_naga_hex_v2',
+               'set_logo_breath_single_naga_hex_v2', 'set_logo_breath_dual_naga_hex_v2']
+
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/1539/1539_viper.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": "https://assets.razerzone.com/eeimages/support/products/1539/1539_viper.png"
+    }
+
+    DPI_MAX = 16000
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args.clear()
+        self.suspend_args['brightness'] = _da_get_logo_brightness(self)
+
+        self.disable_notify = True
+        _da_set_logo_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', 100)
+
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        self.disable_notify = False
+
+
 class RazerDeathAdderEssential(__RazerDeviceSpecialBrightnessSuspend):
     """
     Class for the Razer DeathAdder Essential
@@ -1263,6 +1844,211 @@ class RazerDeathAdderEssential(__RazerDeviceSpecialBrightnessSuspend):
         self.suspend_args.clear()
         self.suspend_args['brightness'] = (_da_get_logo_brightness(self), _da_get_scroll_brightness(self))
 
+        self.disable_notify = True
+        _da_set_logo_brightness(self, 0)
+        _da_set_scroll_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', (100, 100))[0]
+        scroll_brightness = self.suspend_args.get('brightness', (100, 100))[1]
+
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        _da_set_scroll_brightness(self, scroll_brightness)
+        self.disable_notify = False
+
+
+class RazerMambaElite(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer Mamba Elite
+    """
+    USB_VID = 0x1532
+    USB_PID = 0x006C
+    HAS_MATRIX = True
+    WAVE_DIRS = (1, 2)
+    MATRIX_DIMS = [1, 20]
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy',
+               'get_poll_rate', 'set_poll_rate',
+               # Logo logo_led_brightness/logo_matrix_effect_breath/...
+               'get_logo_brightness', 'set_logo_brightness',
+               'set_logo_wave', 'set_logo_static_naga_hex_v2', 'set_logo_spectrum_naga_hex_v2', 'set_logo_none_naga_hex_v2', 'set_logo_reactive_naga_hex_v2', 'set_logo_breath_random_naga_hex_v2', 'set_logo_breath_single_naga_hex_v2', 'set_logo_breath_dual_naga_hex_v2',
+               # Scroll wheel scroll_led_brightness/scroll_matrix_effect_breath/...
+               'get_scroll_brightness', 'set_scroll_brightness',
+               'set_scroll_wave', 'set_scroll_static_naga_hex_v2', 'set_scroll_spectrum_naga_hex_v2', 'set_scroll_none_naga_hex_v2', 'set_scroll_reactive_naga_hex_v2', 'set_scroll_breath_random_naga_hex_v2', 'set_scroll_breath_single_naga_hex_v2', 'set_scroll_breath_dual_naga_hex_v2',
+               # Left side left_led_brightness/left_matrix_effect_breath/...
+               'get_left_brightness', 'set_left_brightness',
+               'set_left_wave', 'set_left_static', 'set_left_spectrum', 'set_left_none', 'set_left_reactive', 'set_left_breath_random', 'set_left_breath_single', 'set_left_breath_dual',
+               # Right side right_led_brightness/right_matrix_effect_breath/...
+               'get_right_brightness', 'set_right_brightness',
+               'set_right_wave', 'set_right_static', 'set_right_spectrum', 'set_right_none', 'set_right_reactive', 'set_right_breath_random', 'set_right_breath_single', 'set_right_breath_dual',
+               # Custom frame
+               'set_custom_effect', 'set_key_row']
+
+    DPI_MAX = 16000
+
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/1390/1390_mamba_elite.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": DEVICE_IMAGE
+    }
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args.clear()
+        self.suspend_args['brightness'] = (
+            _da_get_logo_brightness(self),
+            _da_get_scroll_brightness(self),
+            _get_left_brightness(self),
+            _get_right_brightness(self))
+
+        # Todo make it context?
+        self.disable_notify = True
+        _set_backlight_brightness(self, 0)
+        _da_set_logo_brightness(self, 0)
+        _da_set_scroll_brightness(self, 0)
+        _set_left_brightness(self, 0)
+        _set_right_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', (100, 100))[0]
+        scroll_brightness = self.suspend_args.get('brightness', (100, 100))[1]
+        left_row_brightness = self.suspend_args.get('brightness', (100, 100))[2]
+        right_row_brightness = self.suspend_args.get('brightness', (100, 100))[3]
+
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        _da_set_scroll_brightness(self, scroll_brightness)
+        _set_left_brightness(self, left_row_brightness)
+        _set_right_brightness(self, right_row_brightness)
+        self.disable_notify = False
+
+
+class RazerDeathAdder1800(__RazerDevice):
+    """
+    Class for the Razer DeathAdder 1800
+    """
+    USB_VID = 0x1532
+    USB_PID = 0x0038
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy_byte', 'set_dpi_xy_byte', 'get_poll_rate', 'set_poll_rate',
+               'get_logo_active', 'set_logo_active']
+
+    DPI_MAX = 1800
+
+    DEVICE_IMAGE = "https://rzrwarranty.s3.amazonaws.com/a7daf40ad78c9584a693e310effa956019cdcd081391f93f71a7cd36d3dc577e.png"
+
+    RAZER_URLS = {
+        "top_img": DEVICE_IMAGE
+    }
+
+
+class RazerBasilisk(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer Basilisk
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_Basilisk-if0(1|2)-event-kbd')
+
+    USB_VID = 0x1532
+    USB_PID = 0x0064
+    HAS_MATRIX = True
+    MATRIX_DIMS = [1, 2]
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy', 'get_poll_rate', 'set_poll_rate',
+               'get_logo_brightness', 'set_logo_brightness', 'get_scroll_brightness', 'set_scroll_brightness',
+               # Logo
+               'set_logo_static_naga_hex_v2', 'set_logo_spectrum_naga_hex_v2', 'set_logo_none_naga_hex_v2', 'set_logo_reactive_naga_hex_v2', 'set_logo_breath_random_naga_hex_v2', 'set_logo_breath_single_naga_hex_v2', 'set_logo_breath_dual_naga_hex_v2',
+               # Scroll wheel
+               'set_scroll_static_naga_hex_v2', 'set_scroll_spectrum_naga_hex_v2', 'set_scroll_none_naga_hex_v2', 'set_scroll_reactive_naga_hex_v2', 'set_scroll_breath_random_naga_hex_v2', 'set_scroll_breath_single_naga_hex_v2', 'set_scroll_breath_dual_naga_hex_v2',
+               # Can set LOGO and Scroll with custom
+               'set_custom_effect', 'set_key_row']
+
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/1241/1241_basilisk.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": DEVICE_IMAGE
+    }
+
+    DPI_MAX = 16000
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args.clear()
+        self.suspend_args['brightness'] = (_da_get_logo_brightness(self), _da_get_scroll_brightness(self))
+
+        # Todo make it context?
+        self.disable_notify = True
+        _da_set_logo_brightness(self, 0)
+        _da_set_scroll_brightness(self, 0)
+        self.disable_notify = False
+
+    def _resume_device(self):
+        """
+        Resume the device
+
+        Get the last known brightness and then set the brightness
+        """
+        logo_brightness = self.suspend_args.get('brightness', (100, 100))[0]
+        scroll_brightness = self.suspend_args.get('brightness', (100, 100))[1]
+
+        self.disable_notify = True
+        _da_set_logo_brightness(self, logo_brightness)
+        _da_set_scroll_brightness(self, scroll_brightness)
+        self.disable_notify = False
+
+
+class RazerDeathAdderV2(__RazerDeviceSpecialBrightnessSuspend):
+    """
+    Class for the Razer DeathAdder V2
+    """
+    EVENT_FILE_REGEX = re.compile(r'.*Razer_DeathAdder_V2-if0(1|2)-event-kbd')
+    METHODS = ['get_device_type_mouse', 'max_dpi', 'get_dpi_xy', 'set_dpi_xy', 'get_poll_rate', 'set_poll_rate',
+               'get_logo_brightness', 'set_logo_brightness', 'get_scroll_brightness', 'set_scroll_brightness',
+               # Logo
+               'set_logo_static_naga_hex_v2', 'set_logo_spectrum_naga_hex_v2', 'set_logo_none_naga_hex_v2', 'set_logo_reactive_naga_hex_v2', 'set_logo_breath_random_naga_hex_v2', 'set_logo_breath_single_naga_hex_v2', 'set_logo_breath_dual_naga_hex_v2',
+               # Scroll wheel
+               'set_scroll_static_naga_hex_v2', 'set_scroll_spectrum_naga_hex_v2', 'set_scroll_none_naga_hex_v2', 'set_scroll_reactive_naga_hex_v2', 'set_scroll_breath_random_naga_hex_v2', 'set_scroll_breath_single_naga_hex_v2', 'set_scroll_breath_dual_naga_hex_v2',
+               # Can set LOGO and Scroll with custom
+               'set_custom_effect', 'set_key_row']
+
+    USB_VID = 0x1532
+    USB_PID = 0x0084
+    DEVICE_IMAGE = "https://assets.razerzone.com/eeimages/support/products/1612/1612_razerdeathadderv2.png"
+
+    # Deprecated - RAZER_URLS be removed in future.
+    RAZER_URLS = {
+        "top_img": "https://assets.razerzone.com/eeimages/support/products/1612/1612_razerdeathadderv2.png"
+    }
+
+    DPI_MAX = 20000
+
+    def _suspend_device(self):
+        """
+        Suspend the device
+
+        Get the current brightness level, store it for later and then set the brightness to 0
+        """
+        self.suspend_args.clear()
+        self.suspend_args['brightness'] = (_da_get_logo_brightness(self), _da_get_scroll_brightness(self))
+
+        # Todo make it context?
         self.disable_notify = True
         _da_set_logo_brightness(self, 0)
         _da_set_scroll_brightness(self, 0)
